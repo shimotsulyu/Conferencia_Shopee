@@ -6,7 +6,6 @@ endereco = glob.glob('Arquivos/_Mes__completo/*.csv')+glob.glob('Arquivos/*.csv'
 print(len(endereco),endereco)
 #lista com as colunas a serem utilizadas
 target = ['ID do pedido','Hora completa do pedido','Status do pedido','Nome de usuário (comprador)','Número de produtos pedidos', 'Valor Total', 'Cupom do vendedor', 'Taxa de envio pagas pelo comprador']
-
 #função de consulta de rendimento pelo ID
 def consultaV(endereco,ID):
     ID = ID.upper()
@@ -45,6 +44,7 @@ def consultaV(endereco,ID):
 def somaV(data1,data2,text,target):
     data2 = data2.append(data1[target], ignore_index=True)
     data2.drop_duplicates()
+    data2.dropna(axis='rows')
     VTotal = data2['Valor Total'].sum()
     CupomV = data2['Cupom do vendedor'].sum()
     Frete = data2['Taxa de envio pagas pelo comprador'].sum()
@@ -80,13 +80,27 @@ def gerarR(endereco,target):
     print('Carteira Total:', round(Carteira))
     print('TOTAL:',Liberar1+Liberar2+Carteira)
     print('\nFIM rendimento total\n*****************************************************\n\n')
-def gerarLista(endereco,target):
+def gerarTabela(endereco,target):
     #cria dataframes pandas
     Main = pd.DataFrame()
     #percorre os arquivos csv
     for end in endereco:
+        print(end)
         #cria um dataframe com do arquivo lido
         data = pd.read_csv(end,sep=';')
-        Main = Main.append(data[target], ignore_index=True).drop_duplicates().dropna(axis='rows')
+        print(len(data))
+        Main = Main.append(data[target], ignore_index=True)
+        Main.drop_duplicates()
+        Main.dropna(axis='rows')
+        print(len(Main))
     Main['Rendimento'] = Main['Valor Total'] - Main['Cupom do vendedor'] - Main['Taxa de envio pagas pelo comprador'] 
     return Main
+def salvarTabela(endereco,target,nome_arquivo):
+    out = gerarTabela(endereco,target)
+    df1 = out[['ID do pedido','Status do pedido','Nome de usuário (comprador)','Rendimento']].dropna(axis='rows').reset_index(drop=True)
+    writer = pd.ExcelWriter(nome_arquivo)
+    df1.to_excel(writer, sheet_name = "Rendimento")
+    writer.save()
+    writer.close()
+    print('Arquivo',nome_arquivo,'salvo com sucesso')
+    return df1
