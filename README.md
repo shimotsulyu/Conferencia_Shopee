@@ -23,3 +23,6 @@ consultaV(ID)
 
 #gerar e salvar tabela
 gerarTab('Tabela.xls')
+
+#ver rank de compradores ('Cancelado, Completo, Frete, Não pago, A Enviar)
+rank('Cancelado')
