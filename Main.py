@@ -2,105 +2,114 @@
 import pandas as pd
 import glob
 #cria uma lista com o nome de todos os arquivos csv na pasta "Arquivos"
-endereco = glob.glob('Arquivos/_Mes__completo/*.csv')+glob.glob('Arquivos/*.csv')
-print(len(endereco),endereco)
+endereco = glob.glob('Arquivos/_Mes__completo/*.xls')+glob.glob('Arquivos/*.xls')
+print(len(endereco),endereco,'\n')
 #lista com as colunas a serem utilizadas
-target = ['ID do pedido','Hora completa do pedido','Status do pedido','Nome de usuário (comprador)','Número de produtos pedidos', 'Valor Total', 'Cupom do vendedor', 'Taxa de envio pagas pelo comprador']
+target = ['ID do pedido','Data de criação do pedido','Status do pedido','Nome de usuário (comprador)','Número de produtos pedidos', 'Valor Total', 'Cupom do vendedor', 'Taxa de envio pagas pelo comprador']
 #função de consulta de rendimento pelo ID
-def consultaV(endereco,ID):
+def consultaV(endereco,ID,saida=False):
     ID = ID.upper()
     print('Procurando:',ID)
     empty = True
     for end in endereco:
-        #cria um dataframe com do arquivo lido
-        data = pd.read_csv(end,sep=';')
-        #verifica se o arquivo contem o ID
-        if len(data.loc[data['ID do pedido']==ID])==1:
-            empty = False
-            #Valor total do pedido
-            VTotal = float(data.loc[data['ID do pedido']==ID]['Valor Total'])
-            #Valor do cupom de desconto do vendendor
-            CupomV = float(data.loc[data['ID do pedido']==ID]['Cupom do vendedor'])
-            #Valor da taxa de envio paga pelo comprador
-            Frete = float(data.loc[data['ID do pedido']==ID]['Taxa de envio pagas pelo comprador'])
-            #Rendimento total
-            total = round(VTotal - CupomV - Frete,2)
-            #informações da consulta
-            print('*****************************************************')
-            print(end)
-            print('ID:',ID)
-            print(data.loc[data['ID do pedido']==ID]['Nome de usuário (comprador)'])
-            print('Itens:',int(data.loc[data['ID do pedido']==ID]['Número de produtos pedidos']),'\n')
-            print('_______________________________\nTotal do pedido:',VTotal)
-            print('Cupon do vendedor:',-1*CupomV)
-            print('Taxa de envio',-1*Frete)
-            print('_______________________________\nRendimento de pedido:',total)
-            print('\nFIM rendimento pedido\n*****************************************************\n\n')
-    if empty is True:
-        print('*****************************************************')
-        print('ID não encontrado!')
-        print('\nFIM rendimento pedido\n*****************************************************\n\n')
+        data = pd.read_excel(end,sep=';')
+    data = data.loc[data['ID do pedido']==ID]
+    print(data['Nome de usuário (comprador)'].to_string(index=False))
+    dados = data[['Nome de usuário (comprador)', 'Nome do destinatário', 'Telefone',
+       'Endereço de entrega', 'Cidade', 'Bairro', 'Cidade.1', 'UF', 'País',
+       'CEP']]
+    dados['Telefone'] = dados['Telefone'].astype(int)
+    total = data['Valor Total'] - data['Cupom do vendedor'] - data['Taxa de envio pagas pelo comprador']
+    status = data[['Status do pedido', 'Status da Devolução / Reembolso']].to_numpy()[0]
+    if saida is True:
+        return total, status, dados, data
+    else:
+        print('Status:',status)
+        print('Rendimento:',total.to_string(index=False))
 #função de soma de rendimentos
-def somaV(data1,data2,text,target):
-    data2 = data2.append(data1[target], ignore_index=True)
-    data2.drop_duplicates()
-    data2.dropna(axis='rows')
-    VTotal = data2['Valor Total'].sum()
-    CupomV = data2['Cupom do vendedor'].sum()
-    Frete = data2['Taxa de envio pagas pelo comprador'].sum()
+def somaR(data,tipo):
+    data = data[target].loc[data['Status do pedido']==tipo]
+    vendas = data['ID do pedido'].count()
+    VTotal = data['Valor Total'].sum()
+    CupomV = data['Cupom do vendedor'].sum()
+    Frete = data['Taxa de envio pagas pelo comprador'].sum()
     total = VTotal - CupomV - Frete
-    return data2, total
+    return total, vendas
+#verifica mê
+def mesR(end):
+    if end[-8:-6] == '01':
+        return 'Janeiro'
+    elif end[-8:-6] == '02':
+        return 'Fevereiro'
+    elif end[-8:-6] == '03':
+        return 'Março'
+    elif end[-8:-6] == '04':
+        return 'Abril'
+    elif end[-8:-6] == '05':
+        return 'Maio'
+    elif end[-8:-6] == '06':
+        return 'Junho'
+    elif end[-8:-6] == '07':
+        return 'Julho'
+    elif end[-8:-6] == '08':
+        return 'Agosto'
+    elif end[-8:-6] == '09':
+        return 'Stembro'
+    elif end[-8:-6] == '10':
+        return 'Outubro'
+    elif end[-8:-6] == '11':
+        return 'Novembro'
+    elif end[-8:-6] == '12':
+        return 'Dezembro'
+    else:
+        return 'Mes não identificado'
+import numpy as np
 #função gerar rendimento
-def gerarR(endereco,target):
-    #cria dataframes pandas
-    completo, enviando, enviar = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
-    #percorre os arquivos csv
+def gerarR(endereco):
+    #percorre os arquivos xls
+    Total = 0
     for end in endereco:
-        print(end)
-        #cria um dataframe com do arquivo lido
-        data = pd.read_csv(end,sep=';')
-        #variavel para determinar o tipo de venda
-        status = end[15:21]
-        #c para completo
-        if status == 'comple':
-            completo, Carteira = somaV(data,completo,'Carteira:',target)
-        #s para enviando
-        elif status == 'shippi':
-            enviando, Liberar1 = somaV(data,enviando,'Enviando:',target)
-        #t para enviar
-        elif status == 'toship':
-            enviar, Liberar2 = somaV(data,enviar,'Enviar:',target)
-    #informações das vendas
-    print('*****************************************************')
-    print('Vendas completadas:',completo['ID do pedido'].count(),'/ Itens:',completo['Número de produtos pedidos'].sum())
-    print('Vendas enviando:',enviando['ID do pedido'].count(),'/ Itens:',enviando['Número de produtos pedidos'].sum())
-    print('Vendas enviar:',enviar['ID do pedido'].count(),'/ Itens:',enviar['Número de produtos pedidos'].sum())
-    print('*****************************************************')
-    print('Para Liberar:', Liberar1+Liberar2)
-    print('Carteira Total:', round(Carteira))
-    print('TOTAL:',Liberar1+Liberar2+Carteira)
-    print('\nFIM rendimento total\n*****************************************************\n\n')
-def gerarTabela(endereco,target):
+        data = pd.read_excel(end,sep=';')
+        data.dropna(subset=['Status do pedido'])
+        mes = mesR(end).upper()
+        print('__________________________#\n',mes)
+        tipo = data['Status do pedido'].unique()
+        TotalMes, Npago = 0, 0
+        for t in tipo:
+            if str(t)!='nan':
+                total, vendas = somaR(data,t)
+                print('    ',vendas,t,':',total)
+                if t!='Cancelado':
+                    if t!='Não pago':
+                        TotalMes = TotalMes+total
+        Total = Total+TotalMes
+        print('__________________________\nRendimento',mes,TotalMes)
+        print('__________________________#')
+    print('____________________________________________________\nRendimento Total:',Total) 
+#funcao para salvar tabela xls
+def salvarTab(data,nome_arquivo):
+    writer = pd.ExcelWriter(nome_arquivo)
+    data.to_excel(writer, sheet_name = "Rendimento")
+    writer.save()
+    writer.close()
+    print('Arquivo',nome_arquivo,'salvo com sucesso')
+#funcao para gerar tabela xls
+def gerarTab(endereco,target,nome_arquivo,saida=False):
     #cria dataframes pandas
     Main = pd.DataFrame()
     #percorre os arquivos csv
     for end in endereco:
-        print(end)
         #cria um dataframe com do arquivo lido
-        data = pd.read_csv(end,sep=';')
-        print(len(data))
+        data = pd.read_excel(end,sep=';')
         Main = Main.append(data[target], ignore_index=True)
-        Main.drop_duplicates()
-        Main.dropna(axis='rows')
-        print(len(Main))
     Main['Rendimento'] = Main['Valor Total'] - Main['Cupom do vendedor'] - Main['Taxa de envio pagas pelo comprador'] 
-    return Main
-def salvarTabela(endereco,target,nome_arquivo):
-    out = gerarTabela(endereco,target)
-    df1 = out[['ID do pedido','Status do pedido','Nome de usuário (comprador)','Rendimento']].dropna(axis='rows').reset_index(drop=True)
-    writer = pd.ExcelWriter(nome_arquivo)
-    df1.to_excel(writer, sheet_name = "Rendimento")
-    writer.save()
-    writer.close()
-    print('Arquivo',nome_arquivo,'salvo com sucesso')
-    return df1
+    Main = Main[['Data de criação do pedido','ID do pedido','Status do pedido','Nome de usuário (comprador)','Rendimento']]
+    Main = Main.loc[(Main['Status do pedido']=='Completo') | (Main['Status do pedido']=='Cancelado') | (Main['Status do pedido']=='Frete') | (Main['Status do pedido']=='Não pago') | (Main['Status do pedido']=='A Enviar')]
+    print('\n____________________________________________________')
+    print('DADOS DE VENDAS\n')
+    for status in Main['Status do pedido'].unique():
+        print(status,round(Main.loc[Main['Status do pedido']==status,'Rendimento'].sum(),2))
+    print('____________________________________________________')
+    salvarTab(Main,nome_arquivo)
+    if saida is True:
+        return Main
