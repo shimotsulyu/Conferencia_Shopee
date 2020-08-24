@@ -1,5 +1,6 @@
 # Requisitos
 [Python 3.8] https://www.python.org/downloads/
+
 [Pandas library] https://pandas.pydata.org/getting_started.html
 
 # Conferencia_Shopee
