@@ -128,3 +128,54 @@ def rank(tipo):
     compradores = Main['Nome de usuário (comprador)'].value_counts()
     print(compradores)
     salvarTab(compradores,tipo,'planilha')
+while True:    
+    menu = int(input('1 - Gerar redimento mês a mês\n2 - Consulta rendimento de pedido\n3 - Gerar tabela xls\n4 - Visualizar rank\n'))
+    print(menu,'selecionado')
+    if menu == 1:
+        gerarR()
+        v = input('\n\nRetornar ao menu? S/N\n')
+        if v.upper() == 'S':
+            True
+        elif v.upper() == 'N':
+            False
+            break
+        else:
+            print('ERRO - Valor incorreto')
+            True
+    elif menu == 2:
+        consultaV(input('ID:'))
+        v = input('\n\nRetornar ao menu? S/N\n')
+        if v.upper() == 'S':
+            True
+        elif v.upper() == 'N':
+            False
+            break
+        else:
+            print('ERRO - Valor incorreto')
+            True        
+    elif menu == 3:
+        gerarTab(input('Nome da tabela:\n'))
+        v = input('\n\nRetornar ao menu? S/N\n')
+        if v.upper() == 'S':
+            True
+        elif v.upper() == 'N':
+            False
+            break
+        else:
+            print('ERRO - Valor incorreto')
+            True
+    elif menu == 4:
+        tipo = input('Cancelado\nCompleto\nFrete\nNão pago\nA Enviar\n')
+        rank(tipo)
+        v = input('\n\nRetornar ao menu? S/N\n')
+        if v.upper() == 'S':
+            True
+        elif v.upper() == 'N':
+            False
+            break
+        else:
+            print('ERRO - Valor incorreto')
+            True
+    else:
+        print('ERRO - Valor incorreto')
+        True

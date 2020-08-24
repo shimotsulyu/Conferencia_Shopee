@@ -11,18 +11,13 @@ Projeto para calcular os valores a receber das vendas concluídas, enviadas e a 
 
 5 - Copiar e colar o arquivo na pasta 'Arquivos' do código (Caso tenha arquivo concluído de mes completo, insira na pasta "_Mes__completo")
 
-6 - Compilar as funções
+6 - Abrir o terminal na pasta
 
+7 - Digitar "Python Main.py" (sem aspas)
 
-## Funções:
-#consulta de rendimento mês a mês 
-gerarR()
+8 - Utilizar as funções
 
-#consulta rendimento de um pedido (ID = ID do pedido)
-consultaV(ID)
-
-#gerar e salvar tabela
-gerarTab('Tabela.xls')
-
-#ver rank de compradores ('Cancelado, Completo, Frete, Não pago, A Enviar)
-rank('Cancelado')
+    1 - Gerar redimento mês a mês
+    2 - Consulta rendimento de pedido
+    3 - Gerar tabela xls
+    4 - Visualizar rank
