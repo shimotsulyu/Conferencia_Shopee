@@ -1,3 +1,7 @@
+# Requisitos
+[Python 3.8] https://www.python.org/downloads/
+[Pandas library] https://pandas.pydata.org/getting_started.html
+
 # Conferencia_Shopee
 Projeto para calcular os valores a receber das vendas concluídas, enviadas e a enviar.
 
