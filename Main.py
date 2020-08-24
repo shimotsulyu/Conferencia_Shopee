@@ -7,25 +7,28 @@ print(len(endereco),endereco,'\n')
 #lista com as colunas a serem utilizadas
 target = ['ID do pedido','Data de criação do pedido','Status do pedido','Nome de usuário (comprador)','Número de produtos pedidos', 'Valor Total', 'Cupom do vendedor', 'Taxa de envio pagas pelo comprador']
 #função de consulta de rendimento pelo ID
-def consultaV(endereco,ID,saida=False):
-    ID = ID.upper()
+def consultaV(ID,saida=False):
+    ID = str(ID.upper())
     print('Procurando:',ID)
     empty = True
     for end in endereco:
         data = pd.read_excel(end,sep=';')
     data = data.loc[data['ID do pedido']==ID]
-    print(data['Nome de usuário (comprador)'].to_string(index=False))
-    dados = data[['Nome de usuário (comprador)', 'Nome do destinatário', 'Telefone',
-       'Endereço de entrega', 'Cidade', 'Bairro', 'Cidade.1', 'UF', 'País',
-       'CEP']]
-    dados['Telefone'] = dados['Telefone'].astype(int)
-    total = data['Valor Total'] - data['Cupom do vendedor'] - data['Taxa de envio pagas pelo comprador']
-    status = data[['Status do pedido', 'Status da Devolução / Reembolso']].to_numpy()[0]
-    if saida is True:
-        return total, status, dados, data
+    if len(data)>0:
+        print(data['Nome de usuário (comprador)'].to_string(index=False))
+        dados = data[['Nome de usuário (comprador)', 'Nome do destinatário', 'Telefone',
+           'Endereço de entrega', 'Cidade', 'Bairro', 'Cidade.1', 'UF', 'País',
+           'CEP']]
+        dados['Telefone'] = dados['Telefone'].astype(int)
+        total = data['Valor Total'] - data['Cupom do vendedor'] - data['Taxa de envio pagas pelo comprador']
+        status = data[['Status do pedido', 'Status da Devolução / Reembolso']].to_numpy()[0]
+        if saida is True:
+            return total, status, dados, data
+        else:
+            print('Status:',status)
+            print('Rendimento:',total.to_string(index=False))
     else:
-        print('Status:',status)
-        print('Rendimento:',total.to_string(index=False))
+        print('ID não encontrado!')
 #função de soma de rendimentos
 def somaR(data,tipo):
     data = data[target].loc[data['Status do pedido']==tipo]
@@ -65,7 +68,7 @@ def mesR(end):
         return 'Mes não identificado'
 import numpy as np
 #função gerar rendimento
-def gerarR(endereco):
+def gerarR():
     #percorre os arquivos xls
     Total = 0
     for end in endereco:
@@ -94,7 +97,7 @@ def salvarTab(data,nome_arquivo):
     writer.close()
     print('Arquivo',nome_arquivo,'salvo com sucesso')
 #funcao para gerar tabela xls
-def gerarTab(endereco,target,nome_arquivo,saida=False):
+def gerarTab(nome_arquivo,saida=False):
     #cria dataframes pandas
     Main = pd.DataFrame()
     #percorre os arquivos csv
