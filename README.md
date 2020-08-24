@@ -6,9 +6,9 @@
 # Conferencia_Shopee
 Projeto para calcular os valores a receber das vendas concluídas, enviadas e a enviar.
 
-1 - Ir em 'Meus pedidos'.
+1 - Fazer login na sua conta Shopee e ir em 'Meus pedidos'.
 
-2 - Selecionar um mês completo se possível em 'Data de criação'.
+2 - Selecionar um mês completo em 'Data de criação'.
 
 3 - Clicar em Exportar e aguardar o processamento do arquivo.
 
