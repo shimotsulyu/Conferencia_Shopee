@@ -3,6 +3,8 @@
 
 [Pandas library] https://pandas.pydata.org/getting_started.html
 
+[tkinter] https://docs.python.org/3/library/tkinter.html
+
 # Conferencia_Shopee
 Projeto para calcular os valores a receber das vendas concluídas, enviadas e a enviar.
 
