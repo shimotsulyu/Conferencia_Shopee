@@ -122,7 +122,7 @@ class Application(tk.Frame):
         self.janela('\n______________________________#')
         self.janela('\nDADOS DE VENDAS')
         for status in Main['Status do pedido'].unique():
-            self.janela('\n'+str(status)+' '+str(round(Main.loc[Main['Status do pedido']==status,'Rendimento'].sum(),2)))
+            self.janela('\n    '+str(len(Main.loc[Main['Status do pedido']==status]))+' '+str(status)+' '+str(round(Main.loc[Main['Status do pedido']==status,'Rendimento'].sum(),2)))
         self.salvarTab(Main,nome_arquivo,'Rendimento')
         if saida is True:
             return Main
