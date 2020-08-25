@@ -98,7 +98,6 @@ class Application(tk.Frame):
                         if t!='Não pago':
                             TotalMes = TotalMes+total
             Total = Total+TotalMes
-            self.janela(Total)
             self.janela('\n__________________________\nRendimento '+str(mes)+' '+str(TotalMes))
             self.janela('\n______________________________#')
         self.janela('\n______________________________\nRendimento Total: '+str(Total)) 
