@@ -10,7 +10,7 @@ Projeto para calcular os valores a receber das vendas concluídas, enviadas e a 
 
 2 - Selecionar um mês completo em 'Data de criação'.
 
-3 - Clicar em Exportar e aguardar o processamento do arquivo.
+3 - Clicar em 'Exportar' e aguardar o processamento do arquivo.
 
 4 - Baixar o arquivo
 
@@ -19,10 +19,3 @@ Projeto para calcular os valores a receber das vendas concluídas, enviadas e a 
 6 - Abrir o terminal na pasta
 
 7 - Digitar "Python Main.py" (sem aspas)
-
-8 - Utilizar as funções
-
-    1 - Gerar redimento mês a mês
-    2 - Consulta rendimento de pedido
-    3 - Gerar tabela xls
-    4 - Visualizar rank
