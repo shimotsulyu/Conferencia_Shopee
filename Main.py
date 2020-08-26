@@ -205,6 +205,7 @@ class Application(tk.Frame):
         else:
             for end in self.endereco:
                 self.janela('\n'+end)
+            self.janela('\n\n'+str(len(self.endereco))+' arquivos carregados com sucesso!')
         self.janela('\n____________________________________________________________')
     
 root = tk.Tk()
