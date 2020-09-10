@@ -22,26 +22,35 @@ class Application(tk.Frame):
             Main = Main.append(data, ignore_index=True)
         return Main
     #função de consulta de rendimento pelo ID
-    def consultaV(self,saida=False):
+    def consultaV(self):
         ID = self.EntryBox.get()
         self.clearEntry()
         self.janela('\n______________________________#\nProdurando por '+str(ID))
         empty = True
         data = self.lerArquivos()
-        data = data.loc[data['ID do pedido']==ID]
+        confere = self.consultaID(data, ID, 'ID do pedido')
+        if confere is False:
+            confere = self.consultaID(data, ID, 'Número de rastreamento')
+            if confere is False:
+                self.janela('\n**ERRO! ID ou Rastreio não encontrado!\n______________________________#')
+    def consultaID(self,data,ID,busca):
+        data = data.loc[data[busca]==ID]
         if len(data)>0:
-            self.janela('\nNome: '+data['Nome de usuário (comprador)'].to_string(index=False))
             dados = data[['Nome de usuário (comprador)', 'Nome do destinatário', 'Telefone','Endereço de entrega', 'Cidade', 'Bairro', 'Cidade.1', 'UF', 'País','CEP']]
             dados['Telefone'] = dados['Telefone'].astype(int)
             total = data['Valor Total'] - data['Cupom do vendedor'] - data['Taxa de envio pagas pelo comprador']
             status = data[['Status do pedido', 'Status da Devolução / Reembolso']].to_numpy()[0]
-            if saida is True:
-                return total, status, dados, data
-            else:
-                self.janela('\nStatus: '+str(status))
-                self.janela('\nRendimento: '+total.to_string(index=False)+'\n______________________________#')
+            self.janela('\nUsuário: '+data['Nome de usuário (comprador)'].to_string(index=False))
+            self.janela('\nNome: '+data['Nome do destinatário'].to_string(index=False))
+            self.janela('\nID do pedido: '+data['ID do pedido'].to_string(index=False))
+            self.janela('\nRastreio: '+data['Número de rastreamento'].to_string(index=False))
+            self.janela('\nDestino: '+data['UF'].to_string(index=False)+' - '+data['Cidade'].to_string(index=False))
+            self.janela('\nContato: '+str(int(data['Telefone'])))
+            self.janela('\nStatus: '+str(status))
+            self.janela('\nRendimento: '+total.to_string(index=False)+'\n______________________________#')
+            return True
         else:
-            self.janela('\n**ERRO! ID não encontrado!\n______________________________#')
+            return False
     #função de soma de rendimentos
     def somaR(self,data,tipo):
         data = data[self.target].loc[data['Status do pedido']==tipo]
@@ -110,7 +119,7 @@ class Application(tk.Frame):
         writer.close()
         self.janela('\n\n'+str(nome_arquivo)+' salvo com sucesso\n______________________________#')
     #função para gerar tabela xls
-    def gerarTab(self,saida=False):
+    def gerarTab(self):
         nome_arquivo = 'Rendimento_Total'
         #cria dataframes pandas
         Main = pd.DataFrame()
@@ -124,8 +133,6 @@ class Application(tk.Frame):
         for status in Main['Status do pedido'].unique():
             self.janela('\n    '+str(len(Main.loc[Main['Status do pedido']==status]))+' '+str(status)+' '+str(round(Main.loc[Main['Status do pedido']==status,'Rendimento'].sum(),2)))
         self.salvarTab(Main,nome_arquivo,'Rendimento')
-        if saida is True:
-            return Main
     #função para visualizar rank
     def rank(self):
         tipo = self.EntryBox.get()
